@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Interactiva</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .question { font-size: 1.2em; margin-bottom: 10px; }
+        .options button { display: block; width: 100%; padding: 10px; margin: 5px 0; cursor: pointer; border: none; }
+        .correct { background-color: green !important; color: white; }
+        .incorrect { background-color: red !important; color: white; }
+        .next-btn { display: none; margin-top: 20px; padding: 10px 20px; font-size: 1em; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container animate__animated animate__fadeIn">
+        <h1>Trivia de Conocimientos Generales</h1>
+        <div id="quiz-container">
+            <p id="question" class="question"></p>
+            <div id="options" class="options"></div>
+            <button id="next" class="next-btn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+        <div id="result" class="animate__animated animate__fadeIn" style="display: none;"></div>
+    </div>
+    
+    <script>
+        const questions = [
+            { q: "¿Cuál es el planeta más grande del sistema solar?", options: ["Tierra", "Marte", "Júpiter", "Venus"], answer: 2 },
+            { q: "¿Cuántos continentes hay en el mundo?", options: ["5", "6", "7", "8"], answer: 2 },
+            { q: "¿Quién pintó la Mona Lisa?", options: ["Van Gogh", "Picasso", "Da Vinci", "Miguel Ángel"], answer: 2 },
+            { q: "¿Cuál es el metal más abundante en la corteza terrestre?", options: ["Hierro", "Aluminio", "Cobre", "Oro"], answer: 1 },
+            { q: "¿Cuántos huesos tiene el cuerpo humano adulto?", options: ["206", "208", "210", "212"], answer: 0 },
+            { q: "¿Cuál es el océano más grande del mundo?", options: ["Atlántico", "Índico", "Pacífico", "Ártico"], answer: 2 },
+            { q: "¿Qué científico propuso la teoría de la relatividad?", options: ["Newton", "Galileo", "Einstein", "Tesla"], answer: 2 },
+            { q: "¿En qué país se encuentra la Torre Eiffel?", options: ["Italia", "Francia", "España", "Alemania"], answer: 1 },
+            { q: "¿Cuál es el animal más rápido del mundo?", options: ["Guepardo", "Halcón Peregrino", "León", "Antílope"], answer: 1 },
+            { q: "¿Cuántos colores tiene el arcoíris?", options: ["5", "6", "7", "8"], answer: 2 }
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        
+        function loadQuestion() {
+            document.getElementById("next").style.display = "none";
+            const questionElement = document.getElementById("question");
+            const optionsElement = document.getElementById("options");
+            
+            questionElement.textContent = questions[currentQuestion].q;
+            optionsElement.innerHTML = "";
+            
+            questions[currentQuestion].options.forEach((option, index) => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index, button);
+                optionsElement.appendChild(button);
+            });
+        }
+        
+        function checkAnswer(selectedIndex, button) {
+            const correctIndex = questions[currentQuestion].answer;
+            document.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+            
+            if (selectedIndex === correctIndex) {
+                button.classList.add("correct");
+                score++;
+            } else {
+                button.classList.add("incorrect");
+                document.querySelectorAll(".options button")[correctIndex].classList.add("correct");
+            }
+            document.getElementById("next").style.display = "block";
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function showResults() {
+            const resultElement = document.getElementById("result");
+            document.getElementById("quiz-container").style.display = "none";
+            
+            let feedback;
+            if (score === 10) {
+                feedback = "¡Excelente trabajo! Eres un genio.";
+            } else if (score >= 7) {
+                feedback = "¡Muy bien! Tienes buenos conocimientos.";
+            } else if (score >= 4) {
+                feedback = "¡Bien! Aunque hay espacio para mejorar.";
+            } else {
+                feedback = "Necesitas practicar más. ¡Sigue aprendiendo!";
+            }
+            
+            resultElement.innerHTML = `<h2>Puntaje: ${score}/10</h2><p>${feedback}</p>`;
+            resultElement.style.display = "block";
+        }
+        
+        loadQuestion();
+    </script>
+</body>
+</html>
